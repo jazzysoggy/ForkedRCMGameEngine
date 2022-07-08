@@ -2,7 +2,7 @@ local TS = game:GetService('TweenService')
 local self = {}
 
 self.SlideEx 		= CFrame.new(0,0,-0.4)
-self.SlideLock 		= false
+self.SlideLock 		= true
 
 self.canAim 		= true
 self.Zoom 			= 60
@@ -67,8 +67,8 @@ self.AimRecoilReduction 		= 4
 self.AimSpreadReduction 		= 1
 
 self.MinRecoilPower 			= .5
-self.MaxRecoilPower 			= 1.5
-self.RecoilPowerStepAmount 		= .1
+self.MaxRecoilPower 			= 3
+self.RecoilPowerStepAmount 		= .2
 
 self.MinSpread 					= 0.75
 self.MaxSpread 					= 100					

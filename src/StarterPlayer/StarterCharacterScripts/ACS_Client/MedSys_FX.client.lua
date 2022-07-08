@@ -188,6 +188,7 @@ RS.RenderStepped:connect(function(Update)
 	if Morto and SKP_2.Character and  SKP_2.Character:FindFirstChild("Head") ~= nil then
 		game.Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
 		game.Workspace.CurrentCamera.CFrame =  SKP_2.Character.Head.CFrame
+		
 	end
 end)
 

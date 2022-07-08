@@ -43,7 +43,7 @@ local StoredAmmo
 
 local GreAmmo = 0
 
-local WeaponInHand, WeaponTool, WeaponData, AnimData, PreviousTool, RepValues
+local WeaponInHand, WeaponTool, WeaponData, AnimData, AnimScript, PreviousTool, RepValues, Animationfolder
 local ViewModel, AnimPart, LArm, RArm, LArmWeld, RArmWeld, GunWeld
 local SightData, BarrelData, UnderBarrelData, OtherData
 local generateBullet = 1
@@ -500,6 +500,11 @@ function handleAction(actionName, inputState, inputObject)
 
 	if actionName == "CycleFiremode" and inputState == Enum.UserInputState.Begin and WeaponData and WeaponData.FireModes.ChangeFiremode then
 		Firemode()
+		if WeaponTool:FindFirstChild("ChangeFiremodeSway") then
+			SwaySpring:accelerate(Vector3.new(WeaponTool.ChangeFiremodeSway.Value.X,WeaponTool.ChangeFiremodeSway.Value.Y,WeaponTool.ChangeFiremodeSway.Value.Z))
+		else
+			SwaySpring:accelerate(Vector3.new(1, 1, 0))
+		end
 	end
 
 	if actionName == "CycleAimpart" and inputState == Enum.UserInputState.Begin then
@@ -1114,6 +1119,7 @@ function setup(Tool)
 
 	WeaponData 		= require(Tool:FindFirstChild("ACS_Settings"))
 	AnimData 		= require(Tool:FindFirstChild("ACS_Animations"))
+	AnimScript      = Tool:FindFirstChild("ACS_Animations")
 	WeaponInHand 	= GunModelCheck:Clone()
 	WeaponInHand.PrimaryPart = WeaponInHand:WaitForChild("Handle")
 
@@ -1209,16 +1215,22 @@ function setup(Tool)
 	else
 		TS:Create(Crosshair.Center, TweenInfo.new(.2,Enum.EasingStyle.Linear), {ImageTransparency = 1}):Play()
 	end
+	
+
+
+	LArm = ViewModel:WaitForChild("Left Arm")
+	RArm = ViewModel:WaitForChild("Right Arm")
+
 
 	LArm = ViewModel:WaitForChild("Left Arm")
 	LArmWeld.Part1 = LArm
 	LArmWeld.C0 = CFrame.new()
-	LArmWeld.C1 = CFrame.new(1,-1,-5) * CFrame.Angles(math.rad(0),math.rad(0),math.rad(0)):inverse()
+	LArmWeld.C1 = CFrame.new(1,-1,-5) * CFrame.Angles(math.rad(0),math.rad(0),math.rad(0)):Inverse()
 
 	RArm = ViewModel:WaitForChild("Right Arm")
 	RArmWeld.Part1 = RArm
 	RArmWeld.C0 = CFrame.new()
-	RArmWeld.C1 = CFrame.new(-1,-1,-5) * CFrame.Angles(math.rad(0),math.rad(0),math.rad(0)):inverse()
+	RArmWeld.C1 = CFrame.new(-1,-1,-5) * CFrame.Angles(math.rad(0),math.rad(0),math.rad(0)):Inverse()
 	GunWeld.Part0 = RArm
 
 	LArm.Anchored = false
@@ -1245,6 +1257,19 @@ function setup(Tool)
 	CAS:BindAction("ZeroUp", handleAction, false, gameRules.ZeroUp)
 
 	CAS:BindAction("DropWeapon", handleAction, true, gameRules.DropGun)
+	
+	if WeaponTool:FindFirstChild("Animate") then
+		if WeaponTool:FindFirstChild("Animate").Value then
+			AnimScript.Animations:Clone().Parent = workspace.CurrentCamera:FindFirstChild("Viewmodel")
+			local Animator = Instance.new("Animator", workspace.CurrentCamera:FindFirstChild("Viewmodel"):FindFirstChild("Humanoid"))
+			for i, v in pairs(AnimScript.Animations:GetChildren()) do
+				if v:IsA("Animation") then
+					local loadhum = workspace.CurrentCamera.Viewmodel.Humanoid
+					loadhum:LoadAnimation(v)
+				end
+			end
+		end
+	end
 
 	loadAttachment(WeaponInHand)
 
@@ -1271,7 +1296,7 @@ function setup(Tool)
 	end
 
 	if WeaponData.Type == "Gun" and WeaponData.ShellEjectionMod then
-		WeaponInHand.Bolt.SlidePull.Played:Connect(function()
+		WeaponInHand:FindFirstChild("Bolt").SlidePull.Played:Connect(function()
 			--print(canPump)
 			if Ammo > 0 or canPump then
 				CreateShell(WeaponData.BulletType,WeaponInHand.Handle.Chamber)
@@ -1328,16 +1353,16 @@ function setup(Tool)
 	GunWeld.C1 = guncf
 
 	--WeaponInHand:SetPrimaryPartCFrame( RArm.CFrame * guncf)
-
+	
+	
+	
 	WeaponInHand.Parent = ViewModel	
-	if Ammo <= 0 and WeaponData.Type == "Gun" then
-		WeaponInHand.Handle.Slide.C0 = WeaponData.SlideEx:inverse()
-	end
+
 	EquipAnim()
 	if WeaponData and WeaponData.Type ~= "Grenade" then
 		RunCheck()
 	end
-
+	
 end
 
 function unset()
@@ -1494,7 +1519,7 @@ function Recoil()
 	local ARR = WeaponData.AimRecoilReduction * ModTable.AimRM
 
 	if BipodActive then
-		cameraspring:accelerate(Vector3.new( RecoilX, RecoilY/2, RecoilZ ))
+		cameraspring:accelerate(Vector3.new( RecoilX, RecoilY/2, 2 * RecoilZ ))
 
 		if not aimming then
 			RecoilSpring:accelerate(Vector3.new( math.rad(.25 * gvr * RecoilPower), math.rad(.25 * ghr * RecoilPower), math.rad(.25 * gdr)))
@@ -1506,10 +1531,11 @@ function Recoil()
 		end
 
 		Thread:Wait(0.05)
-		cameraspring:accelerate(Vector3.new(-RecoilX, -RecoilY/2, -RecoilZ))
+		cameraspring:accelerate(Vector3.new(-RecoilX, -RecoilY/2, - 2 * RecoilZ))
 
 	else
-		cameraspring:accelerate(Vector3.new( RecoilX , RecoilY, 2 * RecoilZ ))
+		cameraspring:accelerate(Vector3.new(5 * RecoilX , 5 * RecoilY, 20 * RecoilZ ))
+
 		if not aimming then
 			RecoilSpring:accelerate(Vector3.new( math.rad(gvr * RecoilPower), math.rad(ghr * RecoilPower), math.rad(gdr)))
 			recoilcf = recoilcf * CFrame.new(0,-0.05,.1) * CFrame.Angles( math.rad( gvr * RecoilPower ),math.rad( ghr * RecoilPower ),math.rad( gdr * RecoilPower ))
@@ -1518,6 +1544,8 @@ function Recoil()
 			RecoilSpring:accelerate(Vector3.new( math.rad(gvr * RecoilPower/ARR) , math.rad(ghr * RecoilPower/ARR), math.rad(gdr/ ARR)))
 			recoilcf = recoilcf * CFrame.new(0,0,.1) * CFrame.Angles( math.rad( gvr * RecoilPower/ARR ),math.rad( ghr * RecoilPower/ARR ),math.rad( gdr * RecoilPower/ARR ))
 		end
+		Thread:Wait(0.05)
+		cameraspring:accelerate(Vector3.new(-5 * RecoilX , -5 * RecoilY, -20 * RecoilZ ))
 	end
 end
 
@@ -1941,19 +1969,31 @@ function UpdateGui()
 	HUD.A.Visible = SafeMode
 	HUD.Att.Silencer.Visible = Suppressor
 	HUD.Att.Bipod.Visible = BipodAtt
-	HUD.Sens.Text = (Sens/100)
 
 	if WeaponData.Jammed then
-		HUD.B.BackgroundColor3 = Color3.fromRGB(255,0,0)
+		HUD.FText.TextColor3 = Color3.fromRGB(255,0,0)
 	else
-		HUD.B.BackgroundColor3 = Color3.fromRGB(255,255,255)
+		HUD.FText.TextColor3 = Color3.fromRGB(255,255,255)
+	end
+	
+	if WeaponData.MagCount and WeaponData.ShootType ~= 6 then
+		if Ammo >= WeaponData.Ammo then
+			HUD.Magazines.ImageColor3 = Color3.fromRGB(255,255,255)
+		elseif Ammo < WeaponData.Ammo and Ammo > 0 then
+			HUD.Magazines.ImageColor3 = Color3.fromHSV(0.344444 * (Ammo - 1)/WeaponData.Ammo, 1, 1)			
+		elseif Ammo == 0 then
+			HUD.Magazines.ImageColor3 = Color3.fromRGB(0,0,0)
+		end		
+	else
+		if Ammo >= WeaponData.Ammo then
+			HUD.Bullets.ImageColor3 = Color3.fromRGB(255,255,255)
+		elseif Ammo < WeaponData.Ammo and Ammo > 0 then
+			HUD.Bullets.ImageColor3 = Color3.fromHSV(0.344444 * (Ammo - 1)/WeaponData.Ammo, 1, 1)
+		elseif Ammo == 0 then
+			HUD.Bullets.ImageColor3 = Color3.fromRGB(0,0,0)
+		end		
 	end
 
-	if Ammo > 0 then
-		HUD.B.Visible = true
-	else
-		HUD.B.Visible = false
-	end
 
 	if WeaponData.ShootType == 1 then
 		HUD.FText.Text = "Semi"

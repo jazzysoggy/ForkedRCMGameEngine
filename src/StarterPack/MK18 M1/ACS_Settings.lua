@@ -63,12 +63,12 @@ self.gunRecoil = {
 	,gunRecoilRight = {15,20}
 }
 
-self.AimRecoilReduction 		= 4
-self.AimSpreadReduction 		= 1
+self.AimRecoilReduction 		= 2
+self.AimSpreadReduction 		= 2
 
 self.MinRecoilPower 			= .5
-self.MaxRecoilPower 			= 1.5
-self.RecoilPowerStepAmount 		= .1
+self.MaxRecoilPower 			= 3
+self.RecoilPowerStepAmount 		= .2
 
 self.MinSpread 					= 0.75
 self.MaxSpread 					= 100					
@@ -121,8 +121,8 @@ self.IsLauncher			= true -- For RPG style rocket launchers
 
 self.EjectionOverride	= nil -- Don't touch unless you know what you're doing with Vector3s
 
-self.SwayBase = 0			--- Weapon Base Sway | Studs
-self.MaxSway =	0				--- Max sway value based on player stamina | Studs
+self.SwayBase = 0.05			--- Weapon Base Sway | Studs
+self.MaxSway =	0.1			--- Max sway value based on player stamina | Studs
 
 self.AmmoWidth          = 5.56
 

@@ -707,6 +707,20 @@ Evt.Equip.OnServerEvent:Connect(function(Player,Arma,Mode,Settings,Anim)
 		SKP_004.Part0 = RightArm
 		SKP_004.Part1 = ServerGun.Handle
 		SKP_004.C1 = Anim.SV_GunPos:inverse()
+		
+		if Arma:FindFirstChild("Animate") then
+			if Arma:FindFirstChild("Animate").Value then
+				local AnimScript = Arma.ACS_Animations
+				AnimScript.ServerAnimations:Clone().Parent = Player.Character
+				local Animator = Instance.new("Animator", Player.Character:FindFirstChild("Humanoid"))
+				for i, v in pairs(AnimScript.ServerAnimations:GetChildren()) do
+					if v:IsA("Animation") then
+						local loadhum = workspace.CurrentCamera.Viewmodel.Humanoid
+						loadhum:LoadAnimation(v)
+					end
+				end
+			end
+		end
 
 		for L_74_forvar1, L_75_forvar2 in pairs(ServerGun:GetDescendants()) do
 			if not L_75_forvar2:IsA('BasePart') then continue; end;
@@ -714,6 +728,7 @@ Evt.Equip.OnServerEvent:Connect(function(Player,Arma,Mode,Settings,Anim)
 			L_75_forvar2.CanCollide = false
 		end
 		return;
+		
 	end;
 	--// UNEQUIP
 	if Mode == 2 then
@@ -1165,9 +1180,9 @@ function UpdateLog(Player,humanoid)
 
 	if tag ~= nil then
 
-		local hours = os.date("*t")["hour"]
-		local mins = os.date("*t")["min"]
-		local sec = os.date("*t")["sec"]
+		local hours = os.date("%H")
+		local mins = os.date("%M")
+		local sec = os.date("*S")
 		local TagType = tag:findFirstChild("type")
 
 		if tag.Value.Name == Player.Name then
@@ -1242,110 +1257,6 @@ function ClearDroppedGuns()
 		weapon:Destroy()
 	end
 end
-
-plr.PlayerAdded:Connect(function(player)
-
-	player.CharacterRemoving:Connect(function(char)
-
-		if char:FindFirstChild("Humanoid") and char.Humanoid.Health > 0 and gameRules.DropWeaponsOnLeave then
-			local pos = char.Torso.CFrame
-			local tools = {}
-
-			-- Get tools before player leaves
-			for _, currTool in pairs(player.Backpack:GetChildren()) do
-				if currTool:IsA("Tool") and currTool:FindFirstChild("ACS_Settings") then
-					table.insert(tools,currTool)
-					currTool.Parent = nil
-				end
-			end
-
-			if char:FindFirstChildWhichIsA("Tool") and char:FindFirstChildWhichIsA("Tool"):FindFirstChild("ACS_Settings") then
-				table.insert(tools,char:FindFirstChildWhichIsA("Tool"))
-				char:FindFirstChildWhichIsA("Tool").Parent = nil
-				--SpawnGun(gunName,char.Torso.CFrame * CFrame.new(math.random(-5,5) / 10,1,-2),char[gunName],player)
-			end
-
-			for _, gun in pairs(tools) do
-				SpawnGun(gun.Name,pos,gun)
-				wait()
-			end
-		end
-
-	end)
-
-	for i,v in ipairs(_G.TempBannedPlayers) do
-		if v == player.Name then
-			player:Kick('Blacklisted')
-			warn(player.Name.." (Temporary Banned) tried to join to server")
-			break
-		end
-	end
-
-	for i,v in ipairs(gameRules.Blacklist) do
-		if v == player.UserId then
-			player:Kick('Blacklisted')
-			warn(player.Name.." (Blacklisted) tried to join to server")
-			break
-		end
-	end
-
-	if gameRules.AgeRestrictEnabled and not Run:IsStudio() then
-		if player.AccountAge < gameRules.AgeLimit then
-			player:Kick('Age restricted server! Please wait: '..(gameRules.AgeLimit - player.AccountAge)..' Days')
-		end
-	end
-
-	--if game.CreatorType == Enum.CreatorType.User then
-	--	if player.UserId == game.CreatorId or Run:IsStudio() then
-	--		player.Chatted:Connect(function(Message)
-	--			if string.lower(Message) == "/acslog" then
-	--				Evt.CombatLog:FireClient(player,CombatLog)
-	--			end
-	--		end)
-	--	end
-	--elseif game.CreatorType == Enum.CreatorType.Group then
-	--	if player:IsInGroup(game.CreatorId) or Run:IsStudio() then
-	--		player.Chatted:Connect(function(Message)
-	--			if string.lower(Message) == "/acslog" then
-	--				Evt.CombatLog:FireClient(player,CombatLog)
-	--			end
-	--		end)
-	--	end
-	--end
-
-	if CheckHostID(player) then
-		player.Chatted:Connect(function(msg)
-			-- Convert to lowercase
-			msg = string.lower(msg)
-
-			local pfx = gameRules.CommandPrefix
-
-			if msg == pfx.."acslog" or msg == pfx.."acs log" then
-				Evt.CombatLog:FireClient(player,CombatLog)
-			elseif msg == pfx.."reset all" or msg == pfx.."resetall" or msg == pfx.."reset" then
-				ResetGlass()
-				ResetLights()
-			elseif msg == pfx.."reset glass" or msg == pfx.."resetglass" then
-				ResetGlass()
-			elseif msg == pfx.. "reset lights" or msg == pfx.."resetlights" then
-				ResetLights()
-			elseif msg == pfx.. "clear guns" or msg == pfx.."clearguns" then
-				ClearDroppedGuns()
-			end
-		end)
-	end
-
-
-	local setupWorked = false
-	player.CharacterAdded:Connect(function(char)
-		setupWorked = true
-		SetupCharacter(player,char)
-	end)
-
-	-- Character setup failsafe
-	repeat wait() until player.Character
-	if not setupWorked then SetupCharacter(player,player.Character) end
-end)
 
 function SetupCharacter(player, char)
 	for _, part in pairs(char:GetDescendants()) do
@@ -1547,6 +1458,110 @@ function SpawnGun(gunName,gunPosition,tool,player,config)
 
 	return dropModel
 end
+
+plr.PlayerAdded:Connect(function(player)
+
+	player.CharacterRemoving:Connect(function(char)
+
+		if char:FindFirstChild("Humanoid") and char.Humanoid.Health > 0 and gameRules.DropWeaponsOnLeave then
+			local pos = char.Torso.CFrame
+			local tools = {}
+
+			-- Get tools before player leaves
+			for _, currTool in pairs(player.Backpack:GetChildren()) do
+				if currTool:IsA("Tool") and currTool:FindFirstChild("ACS_Settings") then
+					table.insert(tools,currTool)
+					currTool.Parent = nil
+				end
+			end
+
+			if char:FindFirstChildWhichIsA("Tool") and char:FindFirstChildWhichIsA("Tool"):FindFirstChild("ACS_Settings") then
+				table.insert(tools,char:FindFirstChildWhichIsA("Tool"))
+				char:FindFirstChildWhichIsA("Tool").Parent = nil
+				--SpawnGun(gunName,char.Torso.CFrame * CFrame.new(math.random(-5,5) / 10,1,-2),char[gunName],player)
+			end
+
+			for _, gun in pairs(tools) do
+				SpawnGun(gun.Name,pos,gun)
+				wait()
+			end
+		end
+
+	end)
+
+	for i,v in ipairs(_G.TempBannedPlayers) do
+		if v == player.Name then
+			player:Kick('Blacklisted')
+			warn(player.Name.." (Temporary Banned) tried to join to server")
+			break
+		end
+	end
+
+	for i,v in ipairs(gameRules.Blacklist) do
+		if v == player.UserId then
+			player:Kick('Blacklisted')
+			warn(player.Name.." (Blacklisted) tried to join to server")
+			break
+		end
+	end
+
+	if gameRules.AgeRestrictEnabled and not Run:IsStudio() then
+		if player.AccountAge < gameRules.AgeLimit then
+			player:Kick('Age restricted server! Please wait: '..(gameRules.AgeLimit - player.AccountAge)..' Days')
+		end
+	end
+
+	--if game.CreatorType == Enum.CreatorType.User then
+	--	if player.UserId == game.CreatorId or Run:IsStudio() then
+	--		player.Chatted:Connect(function(Message)
+	--			if string.lower(Message) == "/acslog" then
+	--				Evt.CombatLog:FireClient(player,CombatLog)
+	--			end
+	--		end)
+	--	end
+	--elseif game.CreatorType == Enum.CreatorType.Group then
+	--	if player:IsInGroup(game.CreatorId) or Run:IsStudio() then
+	--		player.Chatted:Connect(function(Message)
+	--			if string.lower(Message) == "/acslog" then
+	--				Evt.CombatLog:FireClient(player,CombatLog)
+	--			end
+	--		end)
+	--	end
+	--end
+
+	if CheckHostID(player) then
+		player.Chatted:Connect(function(msg)
+			-- Convert to lowercase
+			msg = string.lower(msg)
+
+			local pfx = gameRules.CommandPrefix
+
+			if msg == pfx.."acslog" or msg == pfx.."acs log" then
+				Evt.CombatLog:FireClient(player,CombatLog)
+			elseif msg == pfx.."reset all" or msg == pfx.."resetall" or msg == pfx.."reset" then
+				ResetGlass()
+				ResetLights()
+			elseif msg == pfx.."reset glass" or msg == pfx.."resetglass" then
+				ResetGlass()
+			elseif msg == pfx.. "reset lights" or msg == pfx.."resetlights" then
+				ResetLights()
+			elseif msg == pfx.. "clear guns" or msg == pfx.."clearguns" then
+				ClearDroppedGuns()
+			end
+		end)
+	end
+
+
+	local setupWorked = false
+	player.CharacterAdded:Connect(function(char)
+		setupWorked = true
+		SetupCharacter(player,char)
+	end)
+
+	-- Character setup failsafe
+	repeat wait() until player.Character
+	if not setupWorked then SetupCharacter(player,player.Character) end
+end)
 
 Evt.Shell.OnServerEvent:Connect(function(Player,Shell,Origin)
 	Evt.Shell:FireAllClients(Shell,Origin)

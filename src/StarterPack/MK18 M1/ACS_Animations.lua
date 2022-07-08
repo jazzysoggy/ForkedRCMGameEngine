@@ -48,66 +48,44 @@ self.SprintAnim = function(objs)
 end;
 
 self.ReloadAnim = function(objs)
-	--TS:Create(objs[1], TweenInfo.new(.25,Enum.EasingStyle.Sine), {C1 = (CFrame.new(0.05,-0.15,.85) * CFrame.Angles(math.rad(110),math.rad(-15),math.rad(0))):Inverse() }):Play()
-	--TS:Create(objs[2], TweenInfo.new(.25,Enum.EasingStyle.Sine), {C1 = (CFrame.new(-.65,0,.2) * CFrame.Angles(math.rad(110),math.rad(-15),math.rad(30))):Inverse() }):Play()
-	--wait(.3)
-
-	--TS:Create(objs[1], TweenInfo.new(.5,Enum.EasingStyle.Back), {C1 = (CFrame.new(0.05,-0.15,.85) * CFrame.Angles(math.rad(100),math.rad(-5),math.rad(0))):Inverse() }):Play()
-	--TS:Create(objs[2], TweenInfo.new(.25,Enum.EasingStyle.Back), {C1 = (CFrame.new(-.75,-0.15,1) * CFrame.Angles(math.rad(60),math.rad(-5),math.rad(15))):Inverse() }):Play()
-	--wait(.05)
-	--objs[4].Handle.MagOut:Play()
+	--TS:Create(objs[1], TweenInfo.new(0.3,Enum.EasingStyle.Sine), {C1 = (CFrame.new(0.2,-0.2,0.5) * CFrame.Angles(math.rad(80),math.rad(-15),math.rad(0))):Inverse() }):Play()
+	--TS:Create(objs[2], TweenInfo.new(0.3,Enum.EasingStyle.Sine), {C1 = (CFrame.new(-0.5,-0.5,-0.2) * CFrame.Angles(math.rad(90),math.rad(-15),math.rad(30))):Inverse() }):Play()
+	
+	--wait(0.3)
+	
+	---- Pull out mag
 	--objs[4].Mag.Transparency = 1
-	--wait(.5)
-	--objs[4].Handle.AimUp:Play()
-	--wait(.75)
-	--TS:Create(objs[2], TweenInfo.new(.25,Enum.EasingStyle.Sine), {C1 = (CFrame.new(-.65,0,.2) * CFrame.Angles(math.rad(110),math.rad(-15),math.rad(30))):Inverse() }):Play()
-	--wait(.25)
-	--objs[4].Handle.MagIn:Play()
-	--TS:Create(objs[1], TweenInfo.new(.15,Enum.EasingStyle.Sine), {C1 = (CFrame.new(0.05,-0.15,.85) * CFrame.Angles(math.rad(101),math.rad(-6),math.rad(0))):Inverse() }):Play()
+	--objs[4].Handle.MagOut:Play()
+	--TS:Create(objs[1], TweenInfo.new(0.3,Enum.EasingStyle.Back), {C1 = (CFrame.new(0.2,-0.2,0.5) * CFrame.Angles(math.rad(70),math.rad(-15),math.rad(0))):Inverse() }):Play()
+	--TS:Create(objs[2], TweenInfo.new(0.3,Enum.EasingStyle.Sine), {C1 = (CFrame.new(-0.5,-0.8,-0.2) * CFrame.Angles(math.rad(60),math.rad(-15),math.rad(30))):Inverse() }):Play()
+	
+	--wait(0.3)
+	
+	---- Grab next mag
+	--TS:Create(objs[1], TweenInfo.new(0.3,Enum.EasingStyle.Sine), {C1 = (CFrame.new(0.2,-0.2,0.5) * CFrame.Angles(math.rad(75),math.rad(-15),math.rad(0))):Inverse() }):Play()
+	
+	--wait(0.7)
+	
+	--objs[4].Handle.MagPouch:Play()
+	
+	--wait(1.3)
+	
+	---- Insert new mag
 	--objs[4].Mag.Transparency = 0
-	--wait(.2)
+	--objs[4].Handle.MagIn:Play()
+	--TS:Create(objs[2], TweenInfo.new(0.3,Enum.EasingStyle.Sine), {C1 = (CFrame.new(-0.5,-0.5,-0.2) * CFrame.Angles(math.rad(90),math.rad(-15),math.rad(30))):Inverse() }):Play()
 	
-	-- Position
-	-- Side to side (Negative left)
-	-- Up down
-	-- Forward backwards Inverse
+	--TS:Create(objs[1], TweenInfo.new(0.3,Enum.EasingStyle.Back), {C1 = (CFrame.new(0.2,-0.2,0.5) * CFrame.Angles(math.rad(90),math.rad(-15),math.rad(0))):Inverse() }):Play()
 	
-	-- Rotation
-	-- Barrel up down
-	-- Gun tilt
-	-- Side to side
+	--wait(0.3)
 	
-	-- Grab mag
-	TS:Create(objs[1], TweenInfo.new(0.3,Enum.EasingStyle.Sine), {C1 = (CFrame.new(0.2,-0.2,0.5) * CFrame.Angles(math.rad(80),math.rad(-15),math.rad(0))):Inverse() }):Play()
-	TS:Create(objs[2], TweenInfo.new(0.3,Enum.EasingStyle.Sine), {C1 = (CFrame.new(-0.5,-0.5,-0.2) * CFrame.Angles(math.rad(90),math.rad(-15),math.rad(30))):Inverse() }):Play()
-	
-	wait(0.3)
-	
-	-- Pull out mag
-	objs[4].Mag.Transparency = 1
-	objs[4].Handle.MagOut:Play()
-	TS:Create(objs[1], TweenInfo.new(0.3,Enum.EasingStyle.Back), {C1 = (CFrame.new(0.2,-0.2,0.5) * CFrame.Angles(math.rad(70),math.rad(-15),math.rad(0))):Inverse() }):Play()
-	TS:Create(objs[2], TweenInfo.new(0.3,Enum.EasingStyle.Sine), {C1 = (CFrame.new(-0.5,-0.8,-0.2) * CFrame.Angles(math.rad(60),math.rad(-15),math.rad(30))):Inverse() }):Play()
-	
-	wait(0.3)
-	
-	-- Grab next mag
-	TS:Create(objs[1], TweenInfo.new(0.3,Enum.EasingStyle.Sine), {C1 = (CFrame.new(0.2,-0.2,0.5) * CFrame.Angles(math.rad(75),math.rad(-15),math.rad(0))):Inverse() }):Play()
-	
-	wait(0.7)
-	
-	objs[4].Handle.MagPouch:Play()
-	
-	wait(1.3)
-	
-	-- Insert new mag
-	objs[4].Mag.Transparency = 0
-	objs[4].Handle.MagIn:Play()
-	TS:Create(objs[2], TweenInfo.new(0.3,Enum.EasingStyle.Sine), {C1 = (CFrame.new(-0.5,-0.5,-0.2) * CFrame.Angles(math.rad(90),math.rad(-15),math.rad(30))):Inverse() }):Play()
-	
-	TS:Create(objs[1], TweenInfo.new(0.3,Enum.EasingStyle.Back), {C1 = (CFrame.new(0.2,-0.2,0.5) * CFrame.Angles(math.rad(90),math.rad(-15),math.rad(0))):Inverse() }):Play()
-	
-	wait(0.3)
+	local viewmodel = workspace.CurrentCamera:FindFirstChild("Viewmodel")
+	local animfolder = viewmodel:WaitForChild("Animations")
+	local Animator = viewmodel.Humanoid.Animator
+	local animation = Animator:LoadAnimation(animfolder.Reload)
+	animation:Play()
+	animfolder.Reload.Sound:Play()
+	wait(script.Animations.Reload.AnimationTime.Value)
 end;
 
 self.TacticalReloadAnim = function(objs)
